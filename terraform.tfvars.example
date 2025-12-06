@@ -12,3 +12,22 @@ buckets = {
     days_to_keep_old_versions = 10
   }
 }
+
+tunnels = {
+  "homeassistant" = {
+    routes = {
+      "ha" = { 
+        domain  = "myhome.com"
+        service = "http://10.69.4.7:8123" 
+      }
+    }
+  }
+  "media" = {
+    routes = {
+      "tv" = { 
+        domain  = "mymedia.com"
+        service = "http://10.69.4.4:8096" 
+      }
+    }
+  }
+}

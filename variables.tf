@@ -30,3 +30,24 @@ variable "infisical_secrets" {
   }))
   default = {}
 }
+
+variable "cloudflare_domains" {
+  description = "List of Cloudflare domains to manage"
+  type        = list(string)
+  default     = ["ullrmedia.com", "hrolgar.com"]
+}
+
+variable "tunnels" {
+  description = "Map of Cloudflare tunnels and their routes"
+  type = map(object({
+    routes = map(object({
+      domain         = string
+      service        = string
+      origin_request = optional(object({
+        no_tls_verify = optional(bool, false)
+        http2_origin  = optional(bool, false)
+      }), {})
+    }))
+  }))
+  default = {}
+}

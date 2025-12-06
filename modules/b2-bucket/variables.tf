@@ -32,8 +32,8 @@ variable "region" {
   default     = "us-west-004"
 }
 
-# variable "tags" {
-#   description = "Tags to apply to the bucket"
-#   type        = map(string)
-#   default     = {}
-# }
+variable "tags" {
+  description = "Tags to apply to the bucket"
+  type        = map(string)
+  default     = {}
+}

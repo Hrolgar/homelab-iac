@@ -9,6 +9,10 @@ terraform {
       source  = "infisical/infisical"
       version = "~> 0.15.52"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5"
+    }
   }
 }
 
@@ -30,7 +34,24 @@ data "infisical_secrets" "b2" {
   folder_path  = "/b2"
 }
 
+data "infisical_secrets" "cloudflare" {
+  env_slug     = "dev"
+  workspace_id = var.infisical_project_id
+  folder_path  = "/cloudflare"
+}
+
+data "infisical_secrets" "cloudflare_tunnels" {
+  env_slug     = "dev"
+  workspace_id = var.infisical_project_id
+  folder_path  = "/cloudflare/tunnels"
+}
+
 provider "b2" {
   application_key_id = data.infisical_secrets.b2.secrets["b2_application_key_id"].value
   application_key    = data.infisical_secrets.b2.secrets["b2_application_key"].value
+}
+
+
+provider "cloudflare" {
+  api_token = data.infisical_secrets.cloudflare.secrets["api_token"].value
 }
