@@ -1,0 +1,14 @@
+infisical_client_id     = "id-here"
+infisical_client_secret = "secret-here"
+infisical_project_id    = "project-here"
+
+buckets = {
+  "homelab-backups" = {
+    region = "eu-central-003"
+    store_keys_in_infisical = true
+  }
+  "media-archive" = {
+    region                    = "eu-central-003"
+    days_to_keep_old_versions = 10
+  }
+}

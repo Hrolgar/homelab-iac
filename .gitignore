@@ -1,0 +1,7 @@
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+.terraform/
+.terraformrc
+CLAUDE.md
