@@ -1,10 +1,16 @@
-infisical_client_id     = "id-here"
-infisical_client_secret = "secret-here"
-infisical_project_id    = "project-here"
+# Infisical Configuration
+infisical_host          = "http://your-infisical-ip:81"
+infisical_client_id     = "your-client-id"
+infisical_client_secret = "your-client-secret"
+infisical_project_id    = "your-project-id"
 
+# Cloudflare Domains
+cloudflare_domains = ["example.com", "mysite.com"]
+
+# B2 Buckets
 buckets = {
-  "homelab-backups" = {
-    region = "eu-central-003"
+  "my-backups" = {
+    region                  = "eu-central-003"
     store_keys_in_infisical = true
   }
   "media-archive" = {
@@ -13,21 +19,31 @@ buckets = {
   }
 }
 
+# Cloudflare Tunnels
 tunnels = {
   "homeassistant" = {
     routes = {
-      "ha" = { 
-        domain  = "myhome.com"
-        service = "http://10.69.4.7:8123" 
+      "ha" = {
+        domain  = "example.com"
+        service = "http://192.168.1.10:8123"
       }
     }
   }
-  "media" = {
+  "services" = {
     routes = {
-      "tv" = { 
-        domain  = "mymedia.com"
-        service = "http://10.69.4.4:8096" 
+      "portainer" = {
+        domain        = "example.com"
+        service       = "https://192.168.1.20:9443"
+        no_tls_verify = true
       }
     }
+  }
+}
+
+# Cloudflare Access (Zero Trust)
+access_apps = {
+  "Portainer" = {
+    domain    = "example.com"
+    subdomain = "portainer"
   }
 }
