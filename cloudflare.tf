@@ -12,24 +12,39 @@ locals {
   zone_ids = {
     for domain in var.cloudflare_domains : domain => data.cloudflare_zone.zones[domain].zone_id
   }
-  
-  # Map tunnel names to their IDs from Infisical
-  tunnel_ids = {
-    homeassistant  = data.infisical_secrets.cloudflare_tunnels.secrets["homeassistant_tunnel_id"].value
-    ullrmedia      = data.infisical_secrets.cloudflare_tunnels.secrets["ullrmedia_tunnel_id"].value
-    ullraudio      = data.infisical_secrets.cloudflare_tunnels.secrets["ullraudio_tunnel_id"].value
-    ullrservarr    = data.infisical_secrets.cloudflare_tunnels.secrets["ullrservarr_tunnel_id"].value
-    ullrutillities = data.infisical_secrets.cloudflare_tunnels.secrets["ullrutillities_tunnel_id"].value
-  }
 }
+
+
 
 module "cloudflare_tunnels" {
   source   = "./modules/cloudflare-tunnel"
   for_each = var.tunnels
 
   account_id  = data.infisical_secrets.cloudflare.secrets["account_id"].value
-  tunnel_id   = local.tunnel_ids[each.key]
   tunnel_name = each.key
   zone_ids    = local.zone_ids
   routes      = each.value.routes
+
+  # Infisical integration
+  store_in_infisical     = true
+  infisical_folder_path  = "/cloudflare/tunnels"
+  infisical_env_slug     = "dev"
+  infisical_workspace_id = var.infisical_project_id
+}
+
+
+# Access Applications (Zero Trust)
+module "cloudflare_access" {
+  source   = "./modules/cloudflare-access"
+  for_each = var.access_apps
+
+  account_id    = data.infisical_secrets.cloudflare.secrets["account_id"].value
+  domain        = each.value.domain
+  subdomain     = each.value.subdomain
+  app_name      = each.key
+  github_idp_id = data.infisical_secrets.cloudflare.secrets["github_idp_id"].value
+
+  session_duration          = try(each.value.session_duration, "24h")
+  auto_redirect_to_identity = try(each.value.auto_redirect, true)
+  skip_interstitial         = try(each.value.skip_interstitial, true)
 }
