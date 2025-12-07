@@ -67,3 +67,11 @@ access_apps = {
   }
 }
 ```
+
+## State Backend (Optional)
+
+To store state in Backblaze B2:
+
+1. Copy `backend.tf.example` to `backend.tf`
+2. Fill in your B2 bucket name and credentials
+3. Run `tofu init -migrate-state`

@@ -2,7 +2,6 @@
 variable "infisical_host" {
   description = "Infisical host URL"
   type        = string
-  default     = "http://10.69.1.4:81"
 }
 
 variable "infisical_client_id" {

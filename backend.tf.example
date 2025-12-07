@@ -1,0 +1,28 @@
+# backend.tf.example
+# Copy to backend.tf and fill in your credentials
+terraform {
+  backend "s3" {
+    bucket     = "your-backup-bucket"
+    key        = "foldername/nameofstatefile.tfstate"
+    access_key = "your-b2-key-id"
+    secret_key = "your-b2-application-key"
+    
+    endpoints = {
+      s3 = "https://yourbucket.com"
+    }
+    region = "yourbucketsregion"
+    
+    skip_credentials_validation = true
+    skip_requesting_account_id  = true
+    skip_metadata_api_check     = true
+    skip_region_validation      = true
+    skip_s3_checksum            = true
+    use_path_style              = true
+  }
+}
+```
+
+Update `.gitignore`:
+```
+backend.tf
+!backend.tf.example
