@@ -3,14 +3,14 @@
 terraform {
   backend "s3" {
     bucket     = "your-backup-bucket"
-    key        = "foldername/nameofstatefile.tfstate"
+    key        = "opentofu/homelab-iac.tfstate"
     access_key = "your-b2-key-id"
     secret_key = "your-b2-application-key"
     
     endpoints = {
-      s3 = "https://yourbucket.com"
+      s3 = "https://s3.eu-central-003.backblazeb2.com"
     }
-    region = "yourbucketsregion"
+    region = "eu-central-003"
     
     skip_credentials_validation = true
     skip_requesting_account_id  = true
@@ -20,9 +20,3 @@ terraform {
     use_path_style              = true
   }
 }
-```
-
-Update `.gitignore`:
-```
-backend.tf
-!backend.tf.example

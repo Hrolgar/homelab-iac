@@ -43,7 +43,8 @@ tunnels = {
 # Cloudflare Access (Zero Trust)
 access_apps = {
   "Portainer" = {
-    domain    = "example.com"
-    subdomain = "portainer"
+    domain        = "example.com"
+    subdomain     = "portainer"
+    allowed_email = "your-email@example.com"
   }
 }
