@@ -5,3 +5,5 @@
 .terraform/
 .terraformrc
 CLAUDE.md
+backend.tf
+variables-b2.tf
