@@ -13,6 +13,10 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 5"
     }
+    github = {
+      source  = "integrations/github"
+      version = "~> 6.0"
+    }
   }
 }
 
@@ -46,6 +50,14 @@ data "infisical_secrets" "cloudflare_tunnels" {
   folder_path  = "/cloudflare/tunnels"
 }
 
+data "infisical_secrets" "github" {
+  env_slug     = "dev"
+  workspace_id = var.infisical_project_id
+  folder_path  = "/github"
+}
+
+# Configure Providers with secrets from Infisical
+
 provider "b2" {
   application_key_id = data.infisical_secrets.b2.secrets["b2_application_key_id"].value
   application_key    = data.infisical_secrets.b2.secrets["b2_application_key"].value
@@ -54,4 +66,9 @@ provider "b2" {
 
 provider "cloudflare" {
   api_token = data.infisical_secrets.cloudflare.secrets["api_token"].value
+}
+
+provider "github" {
+  token = data.infisical_secrets.github.secrets["token"].value
+  owner = var.github_owner
 }

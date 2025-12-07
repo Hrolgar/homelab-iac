@@ -48,3 +48,32 @@ access_apps = {
     allowed_email = "your-email@example.com"
   }
 }
+
+# GitHub Configuration
+github_owner = "your-github-username"
+
+github_repos = {
+  # Existing repo (import first)
+  "my-project" = {
+    description            = "My existing project"
+    visibility             = "public"
+    topics                 = ["terraform", "automation"]
+    has_issues             = true
+    has_wiki               = false
+    delete_branch_on_merge = true
+    protect_default_branch = true  # Only works on public repos (free plan)
+  }
+
+  # New repo
+  "new-project" = {
+    description        = "A new project"
+    visibility         = "private"
+    auto_init          = true
+    gitignore_template = "Python"
+    license_template   = "mit"
+    topics             = ["python"]
+    collaborators = {
+      "friend-username" = "push"
+    }
+  }
+}

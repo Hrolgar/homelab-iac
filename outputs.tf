@@ -48,3 +48,15 @@ output "access_apps" {
     }
   }
 }
+
+# GitHub Outputs
+output "github_repos" {
+  description = "All GitHub repository details"
+  value = {
+    for name, repo in module.github_repos : name => {
+      url       = repo.html_url
+      ssh_url   = repo.ssh_clone_url
+      https_url = repo.http_clone_url
+    }
+  }
+}
