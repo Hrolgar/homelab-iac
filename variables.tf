@@ -37,7 +37,7 @@ variable "infisical_secrets" {
 variable "cloudflare_domains" {
   description = "List of Cloudflare domains to manage"
   type        = list(string)
-  default     = ["ullrmedia.com", "hrolgar.com"]
+  default     = []
 }
 
 variable "tunnels" {

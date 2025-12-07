@@ -17,7 +17,7 @@ terraform {
 }
 
 provider "infisical" {
-  host = "http://10.69.1.4:81"
+  host = var.infisical_host
   auth = {
     universal = {
       client_id     = var.infisical_client_id
