@@ -40,3 +40,8 @@ variable "skip_interstitial" {
   type        = bool
   default     = true
 }
+
+variable "allowed_email" {
+  description = "Email address allowed to access (your GitHub email)"
+  type        = string
+}

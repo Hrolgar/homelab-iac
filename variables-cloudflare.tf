@@ -23,6 +23,7 @@ variable "access_apps" {
   type = map(object({
     domain            = string
     subdomain         = string
+    allowed_email     = string
     session_duration  = optional(string, "24h")
     auto_redirect     = optional(bool, true)
     skip_interstitial = optional(bool, true)

@@ -43,6 +43,7 @@ module "cloudflare_access" {
   subdomain     = each.value.subdomain
   app_name      = each.key
   github_idp_id = data.infisical_secrets.cloudflare.secrets["github_idp_id"].value
+  allowed_email = each.value.allowed_email
 
   session_duration          = try(each.value.session_duration, "24h")
   auto_redirect_to_identity = try(each.value.auto_redirect, true)
