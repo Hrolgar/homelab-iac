@@ -17,6 +17,10 @@ terraform {
       source  = "integrations/github"
       version = "~> 6.0"
     }
+    proxmox = {
+      source  = "bpg/proxmox"
+      version = "~> 0.89"
+    }
   }
 }
 
@@ -56,6 +60,12 @@ data "infisical_secrets" "github" {
   folder_path  = "/github"
 }
 
+data "infisical_secrets" "proxmox" {
+  env_slug     = "dev"
+  workspace_id = var.infisical_project_id
+  folder_path  = "/proxmox"
+}
+
 # Configure Providers with secrets from Infisical
 
 provider "b2" {
@@ -71,4 +81,10 @@ provider "cloudflare" {
 provider "github" {
   token = data.infisical_secrets.github.secrets["token"].value
   owner = var.github_owner
+}
+
+provider "proxmox" {
+  endpoint  = var.proxmox_host
+  api_token = "${data.infisical_secrets.proxmox.secrets["api_token_id"].value}=${data.infisical_secrets.proxmox.secrets["api_token_secret"].value}"
+  insecure  = true
 }

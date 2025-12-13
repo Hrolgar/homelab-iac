@@ -18,7 +18,6 @@ output "bucket_keys" {
   sensitive = true
 }
 
-# Cloudflare Tunnel Outputs
 output "tunnels" {
   description = "All tunnel details"
   value = {
@@ -38,7 +37,6 @@ output "tunnel_tokens" {
   sensitive = true
 }
 
-# Cloudflare Access Outputs
 output "access_apps" {
   description = "All Access application details"
   value = {
@@ -49,7 +47,6 @@ output "access_apps" {
   }
 }
 
-# GitHub Outputs
 output "github_repos" {
   description = "All GitHub repository details"
   value = {
@@ -58,5 +55,23 @@ output "github_repos" {
       ssh_url   = repo.ssh_clone_url
       https_url = repo.http_clone_url
     }
+  }
+}
+
+output "proxmox_vms" {
+  description = "All Proxmox VM details"
+  value = {
+    for name, vm in module.proxmox_vms : name => {
+      vm_id      = vm.vm_id
+      ip_address = vm.ip_address
+      mac        = vm.mac_address
+    }
+  }
+}
+
+output "proxmox_pools" {
+  description = "All Proxmox pools"
+  value = {
+    for name, pool in module.proxmox_pools : name => pool.pool_id
   }
 }
