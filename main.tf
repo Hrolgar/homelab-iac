@@ -17,6 +17,10 @@ terraform {
       source  = "integrations/github"
       version = "~> 6.0"
     }
+    gitlab = {
+      source  = "opentofu/gitlab"
+      version = "~> 17.2"
+    }
     proxmox = {
       source  = "bpg/proxmox"
       version = "~> 0.89"
@@ -33,7 +37,6 @@ provider "infisical" {
     }
   }
 }
-
 
 # Fetch secrets from Infisical
 data "infisical_secrets" "b2" {
@@ -66,6 +69,12 @@ data "infisical_secrets" "proxmox" {
   folder_path  = "/proxmox"
 }
 
+data "infisical_secrets" "gitlab" {
+  env_slug     = "dev"
+  workspace_id = var.infisical_project_id
+  folder_path  = "/gitlab"
+}
+
 # Configure Providers with secrets from Infisical
 
 provider "b2" {
@@ -81,6 +90,11 @@ provider "cloudflare" {
 provider "github" {
   token = data.infisical_secrets.github.secrets["token"].value
   owner = var.github_owner
+}
+
+provider "gitlab" {
+  token = data.infisical_secrets.gitlab.secrets["token"].value
+  base_url = var.gitlab_host
 }
 
 provider "proxmox" {

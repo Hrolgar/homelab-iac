@@ -75,3 +75,25 @@ output "proxmox_pools" {
     for name, pool in module.proxmox_pools : name => pool.pool_id
   }
 }
+
+
+output "gitlab_groups" {
+  value = {
+    for name, group in module.gitlab_groups : name => {
+      group_id  = group.group_id
+      full_path = group.full_path
+      web_url   = group.web_url
+    }
+  }
+}
+
+output "gitlab_projects" {
+  value = {
+    for name, project in module.gitlab_projects : name => {
+      project_id = project.project_id
+      web_url    = project.web_url
+      ssh_url    = project.ssh_url_to_repo
+      http_url   = project.http_url_to_repo
+    }
+  }
+}
