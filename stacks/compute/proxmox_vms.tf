@@ -17,18 +17,9 @@ locals {
   template_id = data.proxmox_virtual_environment_vms.template.vms[0].vm_id
 }
 
-# Create Pools
-module "proxmox_pools" {
-  source   = "./modules/proxmox-pool"
-  for_each = var.proxmox_pools
-
-  pool_id = each.key
-  comment = each.value.comment
-}
-
 # Create VMs
 module "proxmox_vms" {
-  source   = "./modules/proxmox-vm"
+  source   = "../../modules/proxmox-vm"
   for_each = var.vms
 
   vm_name     = each.key
@@ -55,8 +46,7 @@ module "proxmox_vms" {
   pool    = each.value.pool
 
   ci_user     = var.proxmox_ci_user
-  ci_password = data.infisical_secrets.proxmox.secrets["vm_password"].value
-  ci_ssh_keys = try(split(",", data.infisical_secrets.proxmox.secrets["ssh_public_keys"].value), [])
+  ci_password = var.proxmox_ci_password
+  ci_ssh_keys = try(split(",", var.proxmox_ci_ssh_keys), [])
 
-  depends_on = [module.proxmox_pools]
 }

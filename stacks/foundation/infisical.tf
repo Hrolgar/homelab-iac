@@ -1,5 +1,5 @@
 module "infisical_secrets" {
-  source   = "./modules/infisical-secrets"
+  source   = "../../modules/infisical-secrets"
   for_each = var.infisical_secrets
 
   project_id  = var.infisical_project_id
@@ -13,7 +13,7 @@ locals {
 }
 
 module "bucket_keys_to_infisical" {
-  source   = "./modules/infisical-secrets"
+  source   = "../../modules/infisical-secrets"
   for_each = local.buckets_to_store
 
   project_id  = var.infisical_project_id

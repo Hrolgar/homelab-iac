@@ -28,6 +28,38 @@ terraform {
   }
 }
 
+module "foundation" {
+  source = "./stacks/foundation"
+
+  infisical_secrets     = var.infisical_secrets
+  infisical_project_id = var.infisical_project_id
+  proxmox_pools        = var.proxmox_pools
+  buckets               = var.buckets
+}
+
+module "compute" {
+  source = "./stacks/compute"
+
+  proxmox_node        = var.proxmox_node
+  proxmox_template    = var.proxmox_template
+  proxmox_ci_user     = var.proxmox_ci_user
+  proxmox_ci_password = module.foundation.proxmox_ci_password
+  proxmox_ci_ssh_keys = module.foundation.proxmox_ci_ssh_keys
+  vms                 = var.vms
+}
+
+module "network" {
+  source = "./stacks/network"
+
+  cloudflare_domains        = var.cloudflare_domains
+  tunnels                   = var.tunnels
+  access_apps               = var.access_apps
+  cloudflare_account_id     = data.infisical_secrets.cloudflare.secrets["account_id"].value
+  cloudflare_github_idp_id  = module.foundation.cloudflare_github_idp_id
+  infisical_project_id      = var.infisical_project_id
+}
+
+
 provider "infisical" {
   host = var.infisical_host
   auth = {
