@@ -17,10 +17,10 @@ locals {
 
 
 module "cloudflare_tunnels" {
-  source   = "./modules/cloudflare-tunnel"
+  source   = "../../modules/cloudflare-tunnel"
   for_each = var.tunnels
 
-  account_id  = data.infisical_secrets.cloudflare.secrets["account_id"].value
+  account_id  = var.cloudflare_account_id
   tunnel_name = each.key
   zone_ids    = local.zone_ids
   routes      = each.value.routes
@@ -35,14 +35,14 @@ module "cloudflare_tunnels" {
 
 # Access Applications (Zero Trust)
 module "cloudflare_access" {
-  source   = "./modules/cloudflare-access"
+  source   = "../../modules/cloudflare-access"
   for_each = var.access_apps
 
-  account_id    = data.infisical_secrets.cloudflare.secrets["account_id"].value
+  account_id    = var.cloudflare_account_id
   domain        = each.value.domain
   subdomain     = each.value.subdomain
   app_name      = each.key
-  github_idp_id = data.infisical_secrets.cloudflare.secrets["github_idp_id"].value
+  github_idp_id = var.cloudflare_github_idp_id
   allowed_email = each.value.allowed_email
 
   session_duration          = try(each.value.session_duration, "24h")

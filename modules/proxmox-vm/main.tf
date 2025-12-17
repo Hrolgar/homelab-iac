@@ -66,7 +66,7 @@ resource "proxmox_virtual_environment_vm" "this" {
 
   lifecycle {
     ignore_changes = [
-      initialization[0].user_account[0].password,
+      initialization,
     ]
   }
 }

@@ -1,3 +1,15 @@
+variable "infisical_secrets" {
+  type = map(any)
+}
+
+variable "infisical_project_id" {
+  type = string
+}
+
+variable "proxmox_pools" {
+  type = map(any)
+}
+
 variable "buckets" {
   description = "Map of B2 buckets to create"
   type = map(object({
@@ -8,16 +20,4 @@ variable "buckets" {
     tags                    = optional(map(string), {})
   }))
   default = {}
-}
-
-module "b2_buckets" {
-  source = "./modules/b2-bucket"
-
-  for_each = var.buckets
-
-  bucket_name               = each.key
-  public                    = each.value.public
-  days_to_keep_old_versions = each.value.days_to_keep_old_versions
-  region                    = each.value.region
-  tags                      = each.value.tags
 }
