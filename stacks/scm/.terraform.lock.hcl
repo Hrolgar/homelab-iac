@@ -1,0 +1,71 @@
+# This file is maintained automatically by "tofu init".
+# Manual edits may be lost in future updates.
+
+provider "registry.opentofu.org/infisical/infisical" {
+  version     = "0.15.55"
+  constraints = "~> 0.15.52"
+  hashes = [
+    "h1:zwsR34IRaTiP73NKdh3uA3uiUkjc6fRYimNnoMaYb38=",
+    "zh:2bfa44660afd64a2ede089cce3cc4b53cd1244908153ac7a1bf6da9c92e7a623",
+    "zh:2f7f5f0459cf6b24bdd2ccbd796fc0519521621f0f52c08962a2effcac214b52",
+    "zh:30b5091d6661f72f2a2db18e0d5da7c90659a7d3e69dfecda3b29d03cb796ff8",
+    "zh:3b831dbd4d569dceb96f04f035fdf2de9c25b60cf57072ef86d1e1ba7cc6cbb5",
+    "zh:4131df0d36131c09b70a9c2d948cdd115f4a6b0746bad2e331e210f08f354858",
+    "zh:469c15e41c2bf208cdf60a2e9274e573690dcb884f61cb6e35b770b65ac09dec",
+    "zh:46b707151c3a959aacbc99146f65304530a0fe29a5856c754987829137de0712",
+    "zh:488c04a74c8d2a53da854264395a30df878b3ea89b67dbb1ae6c13141dc8ee58",
+    "zh:76aa9897b67cfe4a4ac1090d5095c6e44fe7284e5119d99ab584415db901911e",
+    "zh:890df766e9b839623b1f0437355032a3c006226a6c200cd911e15ee1a9014e9f",
+    "zh:b1deb7b207efa8d764be96b7e0281b82d54702b1feb222998be24bcfe884477c",
+    "zh:d3847f1a8eb68cbf635189cee4624fdc80ccd6da5fe685e3a2a2dbcf141cbf78",
+    "zh:e41cb19d3fef592e62b6d69037412c9b16c3385648b85a92f9242f3787094de2",
+    "zh:ede410973ceed85e03ab4ebeca5d09a01e4d703bff58d3a606616010afa8543d",
+    "zh:f1a6240ce378e931c8f448036fb2e22dc1063c84d910f1474b9911c37c388f17",
+  ]
+}
+
+provider "registry.opentofu.org/integrations/github" {
+  version     = "6.9.0"
+  constraints = "~> 6.0"
+  hashes = [
+    "h1:tVDCbv/t67pHiRWs7CeASyM1of322tCiXD7FH3t22w8=",
+    "zh:0136ce1ca9e438c6af2d2c46a415d9288616597ff7ef943f7b67f352917d2e0a",
+    "zh:0e46a1ff95096fdb2f40c6fcb172ba64a2002c9ce8edab8057f66f192a928be0",
+    "zh:222a4489f4188532643e3341413b9c44b1383d5c722ec45b6f21266a4c4ba2aa",
+    "zh:26a28a08588ee57b6da330bd8ef403045a68a13c42aab4943f67797013b5b6f1",
+    "zh:4cbee92a76b6709f1f543ed838e17ca52eb03a0eb6edc33bc68a78cd0baa0cf3",
+    "zh:54d9cef3445afedd630110a57b866ebb8daddfce8c2faafa46573c4514acdd13",
+    "zh:5b0e9feb58d6271752578a29756f1bd03a2fa9b4f70314f5b514eaabfe29019b",
+    "zh:7c43adad6b481b2d8787bef0ecfa62c95dd335072c160e72e462f83accf0f029",
+    "zh:7dadeb33d40c8b06a8d756e47bc7ea2e7d8a9d8a2f0b2c887c4b3df39c5350a4",
+    "zh:8a5f10033c0b3c2859aef39c0270c67e41634315e38234265bf84d530d0ea74f",
+    "zh:8d47c8cb36fda0f035cd8226b9da4b95d3b952808879759770850d70e2a52150",
+    "zh:b47f7e5318506658e44bf1cae266c3718bb427f0f92f7197c2c9d8571d24d091",
+    "zh:b6197414be228b81c06a7929a50c45daeb3d7a256f482f19b90c214cd787526f",
+    "zh:e02bbc0f4d59150945f2422cb0d81b21eb845c66e9ca5caf2dcaa3da6007a140",
+    "zh:fbd1fee2c9df3aa19cf8851ce134dea6e45ea01cb85695c1726670c285797e25",
+  ]
+}
+
+provider "registry.opentofu.org/opentofu/gitlab" {
+  version     = "17.11.0"
+  constraints = "~> 17.2"
+  hashes = [
+    "h1:C6L0kmdF3GaKliAsWiHDgITTJvnSTw/925dIHtT3its=",
+    "zh:04e483fecac9dc38ef68acbf5e14f0a0d564b7393f7496b4209de05c21135270",
+    "zh:11564bb7e2a0100b035a0b155f6601dd77add833fa7ecd058b43041abde829e7",
+    "zh:1545df0ae5255691ef260e61acb8f165702eceda1b2fd9206756c3dcb18ecc9d",
+    "zh:1e41f16dfb1e3fafb1073d056ec72afae3a622b8bf2827590431ccb501dd53a5",
+    "zh:35abe41577caf54f50991418e6bb6eb72ee71855610cc464bcd56b8d04df1fa7",
+    "zh:3a25f5c60ee15760c85d40a23ae3f994403ad7122bf7ed78d69e79ca01a15d2c",
+    "zh:67e53c3353a0cf119ff966d5906df5ae3f005c9dcf1781fed331b73963ad8714",
+    "zh:6f27d781b83c33434f7284030242c3e55a76670cea9673af2d12ad3a7dc2f41b",
+    "zh:98d20b861d04b8874d7fabfc8e9a2b02e2f51eb3455bb43bbd5aabbeaacb31f7",
+    "zh:9cb9e0cb2cf9b90407dac7cd67ae2fd5cbd835b3644ffd1f92fff32a9c389de5",
+    "zh:9ded69f9bd0bb7968d7ceb8eb6250bb793c60d9e9c06818372b2bda778cf7a66",
+    "zh:ad83d497f01102f655166ada59893abc749b82dfdce89f4555632f09dc5cdc1f",
+    "zh:d06d2d30adb0593927dee850f6f65248496dd4117d6d9be30b758ebc247831ef",
+    "zh:f53f77a3bc4688595171c17f92e1b86774cbdd47e529197460b81ce2a8dd6aba",
+    "zh:f809ab383cca0a5f83072981c64208cbd7fa67e986a86ee02dd2c82333221e32",
+  ]
+}
