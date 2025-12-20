@@ -96,7 +96,23 @@ case "$COMMAND" in
     ;;
 
   apply)
+
     tofu apply "$@"
+
+    APPLY_EXIT_CODE=$?
+
+    # Auto-backup tfvars after successful apply
+
+    if [ $APPLY_EXIT_CODE -eq 0 ]; then
+      echo
+      echo -e "${GREEN}Apply successful! Auto-backing up tfvars to B2...${NC}"
+      if "$SCRIPT_DIR/backup-stack.sh"; then
+        echo -e "${GREEN}✓ Tfvars backup completed${NC}"
+      else
+        echo -e "${YELLOW}⚠ Tfvars backup failed (non-fatal)${NC}"
+      fi
+    fi
+    exit $APPLY_EXIT_CODE
     ;;
 
   destroy)
