@@ -1,60 +1,70 @@
+# locals {
+#   infisical_sources = {
+#     gitlab     = data.infisical_secrets.gitlab.secrets
+#     proxmox    = data.infisical_secrets.proxmox.secrets
+#     b2         = data.infisical_secrets.b2.secrets
+#     cloudflare = data.infisical_secrets.cloudflare.secrets
+#   }
+# }
 locals {
-  # Map all infisical secrets into one lookup table
-  infisical_all_secrets = {
-    "proxmox"    = data.infisical_secrets.proxmox.secrets
-    "gitlab"     = data.infisical_secrets.gitlab.secrets
-    "b2"         = data.infisical_secrets.b2.secrets
-    "cloudflare" = data.infisical_secrets.cloudflare.secrets
-    "cloudflare_tunnels" = data.infisical_secrets.cloudflare_tunnels.secrets
+  infisical_sources = {
+    for path, ds in data.infisical_secrets.folders :
+    path => ds.secrets
   }
-
-  # Flatten group secrets for resource creation
-  group_secrets_flat = flatten([
-    for group_key, secrets in var.gitlab_group_secrets : [
-      for secret_key, secret in secrets : {
-        group_key   = group_key
-        secret_key  = secret_key
-        secret      = secret
-      }
-    ]
-  ])
-
-  project_secrets_flat = flatten([
-    for project_key, secrets in var.gitlab_project_secrets : [
-      for secret_key, secret in secrets : {
-        project_key = project_key
-        secret_key  = secret_key
-        secret      = secret
-      }
-    ]
-  ])
 }
+
 
 resource "gitlab_group_variable" "secrets" {
-  for_each = { for s in local.group_secrets_flat : "${s.group_key}.${s.secret_key}" => s }
+  for_each = var.gitlab_group_secrets
 
-  group             = module.gitlab_groups[each.value.group_key].group_id
-  key               = each.value.secret_key
-  value             = local.infisical_all_secrets[each.value.secret.infisical_path][each.value.secret.infisical_key].value
-  protected         = each.value.secret.protected
-  masked            = each.value.secret.masked
-  variable_type     = each.value.secret.variable_type
-  environment_scope = each.value.secret.environment_scope
+  group = module.gitlab_groups[each.value.group].group_id
+  key   = each.key
+
+  value = (
+    each.value.content_lines != null
+    ? join("\n", [
+      for line in each.value.content_lines :
+      "${line.key}=${line.value != null ? line.value : local.infisical_sources[line.infisical_path][line.infisical_key].value}"
+    ])
+    : each.value.value != null
+    ? each.value.value
+    : local.infisical_sources[each.value.infisical_path][each.value.infisical_key].value
+  )
+
+  variable_type     = each.value.variable_type
+  protected         = each.value.protected
+  masked            = each.value.masked
+  environment_scope = each.value.environment_scope
+  description       = each.value.description
 }
+
 
 resource "gitlab_project_variable" "secrets" {
-  for_each = { for s in local.project_secrets_flat : "${s.project_key}.${s.secret_key}" => s }
+  for_each = var.gitlab_project_secrets
 
-  project           = module.gitlab_projects[each.value.project_key].project_id
-  key               = each.value.secret_key
-  value             = local.infisical_all_secrets[each.value.secret.infisical_path][each.value.secret.infisical_key].value
-  protected         = each.value.secret.protected
-  masked            = each.value.secret.masked
-  variable_type     = each.value.secret.variable_type
-  environment_scope = each.value.secret.environment_scope
+  project = module.gitlab_projects[each.value.project].project_id
+  key     = each.key
+
+  value = (
+    each.value.content_lines != null
+    ? join("\n", [
+      for line in each.value.content_lines :
+      "${line.key}=${line.value != null ? line.value : local.infisical_sources[line.infisical_path][line.infisical_key].value}"
+    ])
+    : each.value.value != null
+    ? each.value.value
+    : local.infisical_sources[each.value.infisical_path][each.value.infisical_key].value
+  )
+
+  variable_type     = each.value.variable_type
+  protected         = each.value.protected
+  masked            = each.value.masked
+  environment_scope = each.value.environment_scope
+  description       = each.value.description
 }
+
 module "gitlab_groups" {
-  source   = "./modules/gitlab-group"
+  source   = "../../modules/gitlab-group"
   for_each = var.gitlab_groups
 
   group_name  = coalesce(each.value.name, each.key)
@@ -73,7 +83,7 @@ module "gitlab_groups" {
 }
 
 module "gitlab_projects" {
-  source   = "./modules/gitlab-project"
+  source   = "../../modules/gitlab-project"
   for_each = var.gitlab_projects
 
   project_name = coalesce(each.value.name, each.key)
@@ -115,3 +125,6 @@ module "gitlab_projects" {
 
   depends_on = [module.gitlab_groups]
 }
+
+
+

@@ -1,27 +1,19 @@
-variable "proxmox_node" {
+/// INFISICAL VARIABLES ///
+
+variable "infisical_host" {
   type = string
 }
 
-variable "proxmox_template" {
+variable "infisical_project_id" {
   type = string
 }
 
-variable "vms" {
-  type = map(any)
-}
-
-
-variable "proxmox_ci_user" {
-  description = "Cloud-Init user for VMs"
-  type        = string
-}
-
-variable "proxmox_ci_password" {
+variable "infisical_client_id" {
   type      = string
   sensitive = true
 }
 
-variable "proxmox_ci_ssh_keys" {
+variable "infisical_client_secret" {
   type      = string
   sensitive = true
 }

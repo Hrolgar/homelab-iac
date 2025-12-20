@@ -1,0 +1,140 @@
+#!/bin/bash
+set -e
+
+# Stack management wrapper script for OpenTofu
+# Usage: ./scripts/stack <stack-name> <command> [args...]
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "$SCRIPT_DIR")"
+BACKEND_CONFIG="$REPO_ROOT/stacks/_shared/backend.tfvars"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+usage() {
+  cat <<EOF
+Usage: $0 <stack-name> <command> [args...]
+
+Stack names: foundation, network, compute, scm
+
+Commands:
+  init            Initialize the stack
+  plan            Show execution plan
+  apply           Apply changes
+  destroy         Destroy resources (requires confirmation)
+  refresh         Refresh state
+  output          Show outputs
+  validate        Validate configuration
+  fmt             Format configuration files
+  backup          Backup tfvars to B2
+  state <args>    Run state commands (e.g., list, show, mv, rm)
+
+Examples:
+  $0 foundation init
+  $0 network plan
+  $0 compute apply
+  $0 scm state list
+  $0 foundation backup
+
+EOF
+  exit 1
+}
+
+# Check arguments
+if [ $# -lt 2 ]; then
+  usage
+fi
+
+STACK_NAME="$1"
+COMMAND="$2"
+shift 2
+
+STACK_DIR="$REPO_ROOT/stacks/$STACK_NAME"
+
+# Validate stack name
+if [ ! -d "$STACK_DIR" ]; then
+  echo -e "${RED}Error: Stack '$STACK_NAME' does not exist${NC}"
+  echo "Available stacks: foundation, network, compute, scm"
+  exit 1
+fi
+
+# Check if backend config exists
+if [ ! -f "$BACKEND_CONFIG" ]; then
+  echo -e "${YELLOW}Warning: Backend config not found at $BACKEND_CONFIG${NC}"
+  echo "You may need to create it from the example:"
+  echo "  cp stacks/_shared/backend.tfvars.example stacks/_shared/backend.tfvars"
+fi
+
+# Change to stack directory
+cd "$STACK_DIR"
+
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}Stack: ${GREEN}$STACK_NAME${NC}"
+echo -e "${BLUE}Command: ${GREEN}$COMMAND${NC}"
+echo -e "${BLUE}Directory: ${YELLOW}$STACK_DIR${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo
+
+# Execute command
+case "$COMMAND" in
+  init)
+    if [ -f "$BACKEND_CONFIG" ]; then
+      echo -e "${GREEN}Initializing with backend configuration...${NC}"
+      tofu init -backend-config="$BACKEND_CONFIG" "$@"
+    else
+      echo -e "${YELLOW}Initializing without backend (local state)...${NC}"
+      tofu init "$@"
+    fi
+    ;;
+
+  plan)
+    tofu plan "$@"
+    ;;
+
+  apply)
+    tofu apply "$@"
+    ;;
+
+  destroy)
+    echo -e "${RED}WARNING: This will destroy all resources in the '$STACK_NAME' stack!${NC}"
+    tofu destroy "$@"
+    ;;
+
+  refresh)
+    tofu refresh "$@"
+    ;;
+
+  output)
+    tofu output "$@"
+    ;;
+
+  validate)
+    tofu validate "$@"
+    ;;
+
+  fmt)
+    tofu fmt -recursive "$@"
+    ;;
+
+  backup)
+    echo -e "${GREEN}Backing up tfvars to B2...${NC}"
+    "$SCRIPT_DIR/backup-stack.sh"
+    ;;
+
+  state)
+    tofu state "$@"
+    ;;
+
+  *)
+    echo -e "${RED}Error: Unknown command '$COMMAND'${NC}"
+    echo
+    usage
+    ;;
+esac
+
+echo
+echo -e "${GREEN}✓ Command completed${NC}"

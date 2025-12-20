@@ -15,18 +15,12 @@ variable "proxmox_template" {
   default     = "debian-template"
 }
 
-variable "proxmox_pools" {
-  description = "Map of Proxmox pools to create"
-  type = map(object({
-    comment = optional(string, "")
-  }))
-  default = {}
-}
 
 variable "proxmox_ci_user" {
   description = "Cloud-Init user for VMs"
   type        = string
 }
+
 
 variable "vms" {
   description = "Map of VMs to create"

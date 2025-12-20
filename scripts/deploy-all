@@ -1,0 +1,54 @@
+#!/bin/bash
+set -e
+
+# Deploy all stacks in the correct order
+# Usage: ./scripts/deploy-all [plan|apply]
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+OPERATION="${1:-plan}"
+
+if [ "$OPERATION" != "plan" ] && [ "$OPERATION" != "apply" ]; then
+  echo -e "${RED}Error: Invalid operation '$OPERATION'${NC}"
+  echo "Usage: $0 [plan|apply]"
+  exit 1
+fi
+
+# Stack deployment order (foundation must be first)
+STACKS=("foundation" "network" "compute" "scm")
+
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}Multi-Stack Deployment${NC}"
+echo -e "${BLUE}Operation: ${GREEN}$OPERATION${NC}"
+echo -e "${BLUE}Stacks: ${YELLOW}${STACKS[*]}${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo
+
+for stack in "${STACKS[@]}"; do
+  echo
+  echo -e "${GREEN}═══════════════════════════════════════${NC}"
+  echo -e "${GREEN}Processing stack: $stack${NC}"
+  echo -e "${GREEN}═══════════════════════════════════════${NC}"
+  echo
+
+  "$SCRIPT_DIR/stack" "$stack" "$OPERATION"
+
+  if [ $? -ne 0 ]; then
+    echo -e "${RED}✗ Failed to $OPERATION stack '$stack'${NC}"
+    exit 1
+  fi
+
+  echo -e "${GREEN}✓ Stack '$stack' completed successfully${NC}"
+done
+
+echo
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${GREEN}✓ All stacks processed successfully${NC}"
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"

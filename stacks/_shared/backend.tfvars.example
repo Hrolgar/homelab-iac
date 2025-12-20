@@ -1,0 +1,6 @@
+# Backend S3/B2 credentials
+# Copy this file to backend.tfvars and fill in your B2 application key credentials
+# Usage: tofu init -backend-config=../_shared/backend.tfvars
+
+access_key = "your-b2-key-id"
+secret_key = "your-b2-application-key"

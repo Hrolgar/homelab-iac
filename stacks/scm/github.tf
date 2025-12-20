@@ -1,5 +1,5 @@
 module "github_repos" {
-  source   = "./modules/github-repo"
+  source   = "../../modules/github-repo"
   for_each = var.github_repos
 
   repo_name   = each.key

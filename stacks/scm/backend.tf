@@ -1,17 +1,13 @@
-# backend.tf.example
-# Copy to backend.tf and fill in your credentials
 terraform {
   backend "s3" {
-    bucket     = "your-backup-bucket"
-    key        = "opentofu/homelab-iac.tfstate"
-    access_key = "your-b2-key-id"
-    secret_key = "your-b2-application-key"
-    
+    bucket = "ullr-backups"
+    key    = "opentofu/stacks/scm/scm.tfstate"
+
     endpoints = {
       s3 = "https://s3.eu-central-003.backblazeb2.com"
     }
     region = "eu-central-003"
-    
+
     skip_credentials_validation = true
     skip_requesting_account_id  = true
     skip_metadata_api_check     = true

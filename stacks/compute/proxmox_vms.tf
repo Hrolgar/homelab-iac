@@ -46,7 +46,7 @@ module "proxmox_vms" {
   pool    = each.value.pool
 
   ci_user     = var.proxmox_ci_user
-  ci_password = var.proxmox_ci_password
-  ci_ssh_keys = try(split(",", var.proxmox_ci_ssh_keys), [])
+  ci_password = local.proxmox_ci_password
+  ci_ssh_keys = try(split(",", local.proxmox_ci_ssh_keys), [])
 
 }
