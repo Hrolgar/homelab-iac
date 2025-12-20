@@ -1,8 +1,5 @@
 terraform {
-  backend "local" {
-    path = "terraform.tfstate"
-  }  
-  required_version = ">= 1.6.0"   
+  required_version = ">= 1.6.0"
   required_providers {
     infisical = {
       source  = "infisical/infisical"

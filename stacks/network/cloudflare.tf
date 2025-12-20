@@ -20,7 +20,7 @@ module "cloudflare_tunnels" {
   source   = "../../modules/cloudflare-tunnel"
   for_each = var.tunnels
 
-  account_id  = var.cloudflare_account_id
+  account_id  = local.cloudflare_account_id
   tunnel_name = each.key
   zone_ids    = local.zone_ids
   routes      = each.value.routes
@@ -38,11 +38,11 @@ module "cloudflare_access" {
   source   = "../../modules/cloudflare-access"
   for_each = var.access_apps
 
-  account_id    = var.cloudflare_account_id
+  account_id    = local.cloudflare_account_id
   domain        = each.value.domain
   subdomain     = each.value.subdomain
   app_name      = each.key
-  github_idp_id = var.cloudflare_github_idp_id
+  github_idp_id = local.cloudflare_github_idp_id
   allowed_email = each.value.allowed_email
 
   session_duration          = try(each.value.session_duration, "24h")

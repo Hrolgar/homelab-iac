@@ -5,4 +5,31 @@
 .terraform/
 .terraformrc
 CLAUDE.md
-backend.tf
+
+# Allow stack backend configurations (safe to commit)
+!stacks/*/backend.tf
+
+# Exclude backend credentials (contains secrets)
+backend.tfvars
+stacks/_shared/backend.tfvars
+!stacks/_shared/backend.tfvars.example
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE files  
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Crash logs
+crash.log
+crash.*.log

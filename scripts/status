@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# Show status of all stacks
+# Usage: ./scripts/status
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Colors
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+STACKS=("foundation" "network" "compute" "scm")
+
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}Stack Status Overview${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo
+
+printf "%-15s %-12s %-10s %-20s\n" "STACK" "INITIALIZED" "BACKEND" "RESOURCES"
+echo "────────────────────────────────────────────────────────────────"
+
+for stack in "${STACKS[@]}"; do
+  STACK_DIR="$REPO_ROOT/stacks/$stack"
+
+  if [ ! -d "$STACK_DIR" ]; then
+    continue
+  fi
+
+  # Check if initialized
+  if [ -d "$STACK_DIR/.terraform" ]; then
+    INIT_STATUS="${GREEN}✓${NC}"
+  else
+    INIT_STATUS="${YELLOW}✗${NC}"
+  fi
+
+  # Check backend type
+  if [ -f "$STACK_DIR/.terraform/terraform.tfstate" ]; then
+    BACKEND_TYPE=$(jq -r '.backend.type // "unknown"' "$STACK_DIR/.terraform/terraform.tfstate" 2>/dev/null || echo "unknown")
+    if [ "$BACKEND_TYPE" = "s3" ]; then
+      BACKEND="${GREEN}remote${NC}"
+    else
+      BACKEND="${YELLOW}local${NC}"
+    fi
+  else
+    BACKEND="${YELLOW}none${NC}"
+  fi
+
+  # Count resources (requires initialized state)
+  cd "$STACK_DIR"
+  RESOURCE_COUNT=$(tofu state list 2>/dev/null | wc -l || echo "0")
+
+  if [ "$RESOURCE_COUNT" -gt 0 ]; then
+    RESOURCES="${GREEN}$RESOURCE_COUNT${NC}"
+  else
+    RESOURCES="${YELLOW}0${NC}"
+  fi
+
+  printf "%-15s %-20b %-18b %-20b\n" "$stack" "$INIT_STATUS" "$BACKEND" "$RESOURCES"
+done
+
+echo
+echo -e "${CYAN}Legend:${NC}"
+echo -e "  ${GREEN}✓${NC} = Initialized    ${YELLOW}✗${NC} = Not initialized"
+echo -e "  ${GREEN}remote${NC} = Using B2 backend    ${YELLOW}local${NC} = Using local state"
+echo
