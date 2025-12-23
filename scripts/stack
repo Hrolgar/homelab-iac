@@ -19,7 +19,7 @@ usage() {
   cat <<EOF
 Usage: $0 <stack-name> <command> [args...]
 
-Stack names: foundation, network, compute, scm
+Stack names: foundation, identity, network, compute, scm
 
 Commands:
   init            Initialize the stack
@@ -58,7 +58,7 @@ STACK_DIR="$REPO_ROOT/stacks/$STACK_NAME"
 # Validate stack name
 if [ ! -d "$STACK_DIR" ]; then
   echo -e "${RED}Error: Stack '$STACK_NAME' does not exist${NC}"
-  echo "Available stacks: foundation, network, compute, scm"
+  echo "Available stacks: foundation, identity, network, compute, scm"
   exit 1
 fi
 

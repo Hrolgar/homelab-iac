@@ -21,8 +21,8 @@ if [ "$OPERATION" != "plan" ] && [ "$OPERATION" != "apply" ]; then
   exit 1
 fi
 
-# Stack deployment order (foundation must be first)
-STACKS=("foundation" "network" "compute" "scm")
+# Stack deployment order (foundation and identity must be first)
+STACKS=("foundation" "identity" "network" "compute" "scm")
 
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BLUE}Multi-Stack Deployment${NC}"

@@ -1,11 +1,3 @@
-# locals {
-#   infisical_sources = {
-#     gitlab     = data.infisical_secrets.gitlab.secrets
-#     proxmox    = data.infisical_secrets.proxmox.secrets
-#     b2         = data.infisical_secrets.b2.secrets
-#     cloudflare = data.infisical_secrets.cloudflare.secrets
-#   }
-# }
 locals {
   infisical_sources = {
     for path, ds in data.infisical_secrets.folders :
