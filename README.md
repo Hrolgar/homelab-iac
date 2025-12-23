@@ -7,6 +7,7 @@ OpenTofu configuration for managing homelab infrastructure using a stack-based a
 This repository uses a **stack-based layout** to organize infrastructure by domain:
 
 - **[`stacks/foundation`](stacks/foundation/README.md)** - Core services (Infisical secrets, B2 storage, Proxmox pools)
+- **[`stacks/identity`](stacks/identity/README.md)** - Identity & authentication (Authentik SSO, proxy providers, groups, policy bindings)
 - **[`stacks/network`](stacks/network/README.md)** - Network infrastructure (Cloudflare tunnels, DNS, Zero Trust)
 - **[`stacks/compute`](stacks/compute/README.md)** - Compute resources (Proxmox VMs)
 - **[`stacks/scm`](stacks/scm/README.md)** - Source control management (GitHub repos, GitLab projects/groups with CI/CD secrets)
@@ -17,6 +18,7 @@ Each stack is independently deployable with its own state file, allowing granula
 ## Providers
 
 - **Infisical** - Secrets management (foundation for all stacks)
+- **Authentik** - Identity provider for SSO and forward authentication
 - **Backblaze B2** - Object storage buckets
 - **Proxmox** - VM provisioning and resource pools
 - **Cloudflare** - Tunnels, DNS, Zero Trust Access
@@ -55,6 +57,11 @@ ln -s ../_shared/infisical.auto.tfvars infisical.auto.tfvars
 
 Organize secrets in Infisical folders:
 ```
+/auth/
+  - AUTHENTIK_TOKEN
+/auth/admin-users/
+  - admin_password
+  - [service_account]_password
 /b2/
   - b2_application_key_id
   - b2_application_key
@@ -87,6 +94,7 @@ cp stacks/_shared/backend.tfvars.example stacks/_shared/backend.tfvars
 
 This enables remote state storage in B2 bucket `ullr-backups`:
 - `opentofu/stacks/foundation/foundation.tfstate`
+- `opentofu/stacks/identity/identity.tfstate`
 - `opentofu/stacks/network/network.tfstate`
 - `opentofu/stacks/compute/compute.tfstate`
 - `opentofu/stacks/scm/scm.tfstate`
@@ -107,7 +115,7 @@ Use the provided wrapper scripts for simplified stack management:
 ./scripts/stack foundation apply   # Apply changes
 ./scripts/stack foundation backup  # Backup tfvars to B2
 
-# Deploy all stacks in order (foundation → network → compute → scm)
+# Deploy all stacks in order (foundation → identity → network → compute → scm)
 ./scripts/deploy-all plan   # Plan all stacks
 ./scripts/deploy-all apply  # Apply all stacks
 
@@ -128,7 +136,10 @@ tofu init -backend-config=../_shared/backend.tfvars
 tofu plan
 tofu apply
 
-# Deploy other stacks
+# Deploy other stacks in order
+cd ../identity
+tofu init -backend-config=../_shared/backend.tfvars && tofu apply
+
 cd ../network
 tofu init -backend-config=../_shared/backend.tfvars && tofu apply
 
@@ -184,7 +195,7 @@ Main wrapper for stack operations. Automatically handles backend configuration a
 
 ### `./scripts/deploy-all`
 
-Deploy all stacks in the correct dependency order (foundation → network → compute → scm).
+Deploy all stacks in the correct dependency order (foundation → identity → network → compute → scm).
 
 ```bash
 ./scripts/deploy-all plan   # Plan all stacks
@@ -204,6 +215,7 @@ Output example:
 STACK           INITIALIZED  BACKEND     RESOURCES
 ────────────────────────────────────────────────────────────
 foundation      ✓            remote      10
+identity        ✓            remote      8
 network         ✓            remote      51
 compute         ✓            remote      1
 scm             ✓            remote      25
@@ -222,6 +234,11 @@ cd stacks/compute
 
 | Module | Description |
 |--------|-------------|
+| `authentik/group` | Manages Authentik groups for user organization |
+| `authentik/policy` | Manages policy bindings for application access control |
+| `authentik/proxy` | Creates proxy providers for forward authentication |
+| `authentik/role` | Manages RBAC roles for Authentik administration |
+| `authentik/user` | Manages admin and service account users |
 | `b2-bucket` | Creates B2 buckets with application keys |
 | `cloudflare-tunnel` | Creates Cloudflare tunnels with DNS records |
 | `cloudflare-access` | Configures Zero Trust Access applications |
@@ -251,6 +268,53 @@ b2_buckets = {
 proxmox_pools = {
   "infrastructure" = {
     comment = "Core infrastructure services"
+  }
+}
+```
+
+### Identity Stack
+
+**Authentik Proxy Providers:**
+```hcl
+# stacks/identity/vars.authentik.auto.tfvars
+authentik_proxies = {
+  "traefik" = {
+    name              = "Traefik Dashboard"
+    external_host     = "https://traefik.example.com"
+    internal_host     = "http://traefik:8080"
+    application_group = "infrastructure"
+    mode              = "forward_single"
+  }
+}
+```
+
+**Groups and Users:**
+```hcl
+authentik_groups = {
+  "admins" = {
+    name         = "Homelab Admins"
+    is_superuser = true
+    user_keys    = ["admin"]
+  }
+}
+
+authentik_users = {
+  "admin" = {
+    username            = "admin"
+    name                = "Admin User"
+    email               = "admin@example.com"
+    password_secret_key = "admin_password"  # From Infisical
+  }
+}
+```
+
+**Policy Bindings:**
+```hcl
+authentik_policy_bindings = {
+  "traefik-admins-only" = {
+    target_type = "application"
+    target_key  = "traefik"
+    group_key   = "admins"
   }
 }
 ```
@@ -396,6 +460,7 @@ gitlab_project_secrets = {
 
 Each stack maintains its own remote state file in Backblaze B2:
 - `s3://ullr-backups/opentofu/stacks/foundation/foundation.tfstate`
+- `s3://ullr-backups/opentofu/stacks/identity/identity.tfstate`
 - `s3://ullr-backups/opentofu/stacks/network/network.tfstate`
 - `s3://ullr-backups/opentofu/stacks/compute/compute.tfstate`
 - `s3://ullr-backups/opentofu/stacks/scm/scm.tfstate`
@@ -495,6 +560,7 @@ b2 file download-by-name ullr-backups opentofu/stacks/_shared/tfvars/infisical.a
 
 Each stack's state is automatically stored in B2:
 - Foundation: `s3://ullr-backups/opentofu/stacks/foundation/foundation.tfstate`
+- Identity: `s3://ullr-backups/opentofu/stacks/identity/identity.tfstate`
 - Network: `s3://ullr-backups/opentofu/stacks/network/network.tfstate`
 - Compute: `s3://ullr-backups/opentofu/stacks/compute/compute.tfstate`
 - SCM: `s3://ullr-backups/opentofu/stacks/scm/scm.tfstate`
